@@ -1,0 +1,23 @@
+1. Phân tích sơ bộ bài toán:
+   1.1. Phân tích các bước thực hiện:
+   - Xây dựng cấu trúc dữ liệu: Thiết kế Node chứa thông tin File và con trỏ link để kết nối.
+   - Duy trì trật tự: Việc "Copy/Paste" thực chất là thao tác InsertSorted. Danh sách luôn được giữ sắp xếp theo thời gian (Timestamp) tăng dần.
+   - Tính toán: Duyệt danh sách từ đầu đến cuối để cộng dồn kích thước.
+   - Tối ưu hóa bộ nhớ (Backup): Đây là bài toán lọc dữ liệu. Nếu tổng dung lượng $> 32GB$, ta phải tìm và xóa Node có size nhỏ nhất cho đến khi thỏa mãn điều kiện.
+   
+   1.2. Thuộc tính của File và Danh sách:
+   - File:
+     + name: Tên file (string).
+     + size: Kích thước file (tính bằng MB để dễ tính toán, 32GB = 32768MB).
+     + time: Thời gian tạo (kiểu long hoặc int đại diện cho timestamp).
+   - Danh sách liên kết:
+     + first: Con trỏ quản lý node đầu tiên.
+     + Trường liên kết: link.
+
+   1.3. Các hàm cần thực thi:
+   - CreateNode: Tạo mới một node chứa thông tin file.
+   - InsertByTime: Chèn file vào danh sách sao cho thời gian vẫn đúng thứ tự.
+   - CalculateTotalSize: Tính tổng dung lượng hiện có.
+   - FindMinSizeNode: Tìm node có kích thước nhỏ nhất để xóa.
+   - RemoveNode: Xóa một node cụ thể (dùng trong thao tác backup).
+   - BackupToUSB: Hàm điều phối chính để kiểm tra dung lượng và loại bỏ file nhỏ.
