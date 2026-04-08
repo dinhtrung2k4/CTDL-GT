@@ -1,0 +1,90 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// 1. Khai báo cấu trúc
+struct File {
+    string name;
+    double size; // Đơn vị MB
+    long time;   // Timestamp
+};
+
+struct Node {
+    File data;
+    Node* link;
+};
+
+// Tạo Node mới
+Node* CreateNode(File x) {
+    Node* p = new Node;
+    p->data = x;
+    p->link = NULL;
+    return p;
+}
+
+// 2. Hàm chèn file theo trật tự thời gian (Copy/Paste)
+void InsertByTime(Node* &first, File x) {
+    Node* p = CreateNode(x);
+    // Danh sách rỗng hoặc file mới có thời gian nhỏ hơn node đầu
+    if (first == NULL || x.time < first->data.time) {
+        p->link = first;
+        first = p;
+    } else {
+        Node* q = first;
+        // Tìm vị trí q sao cho q->time < x.time < q->link->time
+        while (q->link != NULL && q->link->data.time < x.time) {
+            q = q->link;
+        }
+        p->link = q->link;
+        q->link = p;
+    }
+}
+
+// 3. Tính tổng kích thước các file
+double CalculateTotalSize(Node* first) {
+    double total = 0;
+    Node* p = first;
+    while (p != NULL) {
+        total += p->data.size;
+        p = p->link;
+    }
+    return total;
+}
+
+// Hàm hỗ trợ: Xóa node có kích thước nhỏ nhất
+void RemoveSmallestFile(Node* &first) {
+    if (first == NULL) return;
+
+    Node *p = first, *q = NULL;
+    Node *minP = first, *minPrev = NULL;
+    double minSize = first->data.size;
+
+    // Tìm node có size nhỏ nhất
+    while (p->link != NULL) {
+        if (p->link->data.size < minSize) {
+            minSize = p->link->data.size;
+            minPrev = p;
+            minP = p->link;
+        }
+        p = p->link;
+    }
+
+    // Thực hiện xóa node minP
+    if (minP == first) {
+        first = first->link;
+    } else {
+        minPrev->link = minP->link;
+    }
+    delete minP;
+}
+
+// 4. Sao lưu vào USB 32GB (32768 MB)
+void BackupToUSB(Node* &first) {
+    const double USB_CAPACITY = 32768.0; 
+    while (CalculateTotalSize(first) > USB_CAPACITY) {
+        cout << "Tong dung luong vuot muc. Dang loai bo file nho nhat...\n";
+        RemoveSmallestFile(first);
+    }
+    cout << "Sao luu thanh cong! Tong dung luong hien tai: " << CalculateTotalSize(first) << " MB\n";
+}
