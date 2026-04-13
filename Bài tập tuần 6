@@ -88,3 +88,26 @@ void BackupToUSB(Node* &first) {
     }
     cout << "Sao luu thanh cong! Tong dung luong hien tai: " << CalculateTotalSize(first) << " MB\n";
 }
+
+int main() {
+    Node* list = NULL;
+
+    // Thêm dữ liệu giả lập để test
+    // Giả sử có 3 file, tổng dung lượng > 32768 MB để test hàm Backup
+    InsertByTime(list, {"Video_Dam_Cuoi.mp4", 15000.0, 1680000000});
+    InsertByTime(list, {"Game_Nang.iso", 20000.0, 1680000050});
+    InsertByTime(list, {"Tai_Lieu_Hoc_Tap.zip", 5000.0, 1680000010});
+
+    cout << "--- Danh sach file hien tai ---" << endl;
+    Node* temp = list;
+    while(temp != NULL) {
+        cout << "- " << temp->data.name << ": " << temp->data.size << " MB" << endl;
+        temp = temp->link;
+    }
+    cout << "-------------------------------" << endl;
+
+    // Thực hiện sao lưu
+    BackupToUSB(list);
+
+    return 0;
+}
