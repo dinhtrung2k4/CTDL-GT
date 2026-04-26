@@ -1,0 +1,135 @@
+#include <iostream>
+#include <string.h>
+#include <iomanip>
+
+using namespace std;
+
+// --- 1. Khai báo cấu trúc ---
+struct Ngay {
+    int ngay, thang, nam;
+};
+
+struct SinhVien {
+    char maSV[8];
+    char hoTen[50];
+    int gioiTinh; 
+    Ngay ngaySinh;
+    char diaChi[100];
+    char lop[12];
+    char khoa[7];
+};
+
+struct Node {
+    SinhVien data;
+    Node *link;
+};
+
+struct List {
+    Node *first;
+    Node *last;
+};
+
+void Init(List &l) { l.first = l.last = NULL; }
+
+Node* CreateNode(SinhVien sv) {
+    Node* p = new Node;
+    p->data = sv;
+    p->link = NULL;
+    return p;
+}
+
+// --- 2. Thêm SV vào danh sách đã sắp xếp ---
+void InsertSorted(List &l, SinhVien sv) {
+    Node* p = CreateNode(sv);
+    if (l.first == NULL || strcmp(sv.maSV, l.first->data.maSV) < 0) {
+        p->link = l.first;
+        l.first = p;
+        if (l.last == NULL) l.last = p;
+        return;
+    }
+    Node* q = l.first;
+    while (q->link != NULL && strcmp(q->link->data.maSV, sv.maSV) < 0) {
+        q = q->link;
+    }
+    p->link = q->link;
+    q->link = p;
+    if (p->link == NULL) l.last = p;
+}
+
+// In danh sách
+void PrintList(List l) {
+    cout << left << setw(10) << "Ma SV" << setw(20) << "Ho Ten" << "Ngay Sinh" << endl;
+    for (Node* p = l.first; p != NULL; p = p->link) {
+        cout << left << setw(10) << p->data.maSV 
+             << setw(20) << p->data.hoTen 
+             << p->data.ngaySinh.ngay << "/" << p->data.ngaySinh.thang << "/" << p->data.ngaySinh.nam << endl;
+    }
+}
+
+// --- 3. In SV cùng ngày sinh ---
+bool compareDate(Ngay n1, Ngay n2) {
+    return (n1.ngay == n2.ngay && n1.thang == n2.thang && n1.nam == n2.nam);
+}
+
+void PrintSameBirthday(List l) {
+    bool found = false;
+    for (Node* p = l.first; p != NULL; p = p->link) {
+        bool hasMatch = false;
+        for (Node* q = l.first; q != NULL; q = q->link) {
+            if (p != q && compareDate(p->data.ngaySinh, q->data.ngaySinh)) {
+                hasMatch = true; break;
+            }
+        }
+        if (hasMatch) {
+            cout << "Trung ngay sinh: " << p->data.hoTen << " (" << p->data.maSV << ")" << endl;
+            found = true;
+        }
+    }
+    if (!found) cout << "Khong tim thay sinh vien cung ngay sinh" << endl;
+}
+
+// --- 4. Loai bo SV cung ngay sinh ---
+void RemoveByBirthday(List &l) {
+    Node* curr = l.first;
+    Node* prev = NULL;
+    while (curr != NULL) {
+        bool isDuplicate = false;
+        for (Node* temp = l.first; temp != NULL; temp = temp->link) {
+            if (curr != temp && compareDate(curr->data.ngaySinh, temp->data.ngaySinh)) {
+                isDuplicate = true; break;
+            }
+        }
+        if (isDuplicate) {
+            Node* toDelete = curr;
+            if (prev == NULL) { l.first = curr->link; curr = l.first; }
+            else { prev->link = curr->link; curr = prev->link; }
+            delete toDelete;
+        } else {
+            prev = curr; curr = curr->link;
+        }
+    }
+}
+
+int main() {
+    List ds; Init(ds);
+    // Du lieu mau cho Test Cases
+    SinhVien sv1 = {"SV003", "Nguyen Van A", 1, {1, 1, 2000}, "HN", "IT01", "CNTT"};
+    SinhVien sv2 = {"SV001", "Tran Thi B", 0, {5, 5, 2002}, "HCM", "IT02", "CNTT"};
+    SinhVien sv3 = {"SV002", "Le Van C", 1, {1, 1, 2000}, "DN", "IT01", "CNTT"};
+    
+    InsertSorted(ds, sv1);
+    InsertSorted(ds, sv2);
+    InsertSorted(ds, sv3);
+
+    cout << "--- Danh sach sau khi nhap (da sap xep MaSV) ---" << endl;
+    PrintList(ds);
+
+    cout << "\n--- Kiem tra sinh vien cung ngay sinh ---" << endl;
+    PrintSameBirthday(ds);
+
+    cout << "\n--- Danh sach sau khi loai bo SV cung ngay sinh ---" << endl;
+    RemoveByBirthday(ds);
+    PrintList(ds);
+
+    return 0;
+}
