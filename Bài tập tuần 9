@@ -149,9 +149,9 @@ int main() {
     List ds; Init(ds);
     
     // Test Case
-    SinhVien sv1 = {"SV003", "Nguyen Van A", 1, {1, 1, 2003}, "HN", "IT01", "CNTT"};
-    SinhVien sv2 = {"SV001", "Tran Thi B", 0, {5, 5, 2004}, "HCM", "IT02", "CNTT"};
-    SinhVien sv3 = {"SV002", "Le Van C", 1, {1, 1, 2003}, "DN", "IT01", "CNTT"};
+    SinhVien sv1 = {"SV003", "Nguyen Van A", 1, {1, 1, 2003}, "HN", "DT01", "ET1"};
+    SinhVien sv2 = {"SV001", "Tran Thi B", 0, {5, 5, 2004}, "HCM", "DT02", "ET1"};
+    SinhVien sv3 = {"SV002", "Le Van C", 1, {1, 1, 2003}, "DN", "DT01", "ET1"};
     
     InsertSorted(ds, sv1);
     InsertSorted(ds, sv2);
