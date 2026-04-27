@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// --- 1. Khai báo cấu trúc ---
+// 1. Khai báo cấu trúc
 struct Ngay {
     int ngay, thang, nam;
 };
@@ -38,7 +38,7 @@ Node* CreateNode(SinhVien sv) {
     return p;
 }
 
-// --- 2. Thêm SV vào danh sách đã sắp xếp ---
+// 2. Thêm SV vào danh sách đã sắp xếp
 void InsertSorted(List &l, SinhVien sv) {
     Node* p = CreateNode(sv);
     if (l.first == NULL || strcmp(sv.maSV, l.first->data.maSV) < 0) {
@@ -56,8 +56,11 @@ void InsertSorted(List &l, SinhVien sv) {
     if (p->link == NULL) l.last = p;
 }
 
-// In danh sách
 void PrintList(List l) {
+    if (l.first == NULL) {
+        cout << "(Danh sach rong)" << endl;
+        return;
+    }
     cout << left << setw(10) << "Ma SV" << setw(20) << "Ho Ten" << "Ngay Sinh" << endl;
     for (Node* p = l.first; p != NULL; p = p->link) {
         cout << left << setw(10) << p->data.maSV 
@@ -66,7 +69,6 @@ void PrintList(List l) {
     }
 }
 
-// --- 3. In SV cùng ngày sinh ---
 bool compareDate(Ngay n1, Ngay n2) {
     return (n1.ngay == n2.ngay && n1.thang == n2.thang && n1.nam == n2.nam);
 }
@@ -88,34 +90,68 @@ void PrintSameBirthday(List l) {
     if (!found) cout << "Khong tim thay sinh vien cung ngay sinh" << endl;
 }
 
-// --- 4. Loai bo SV cung ngay sinh ---
+// 3. LOAI BO SINH VIEN CUNG NGAY SINH
 void RemoveByBirthday(List &l) {
-    Node* curr = l.first;
-    Node* prev = NULL;
-    while (curr != NULL) {
-        bool isDuplicate = false;
-        for (Node* temp = l.first; temp != NULL; temp = temp->link) {
-            if (curr != temp && compareDate(curr->data.ngaySinh, temp->data.ngaySinh)) {
-                isDuplicate = true; break;
+    Node* p = l.first;
+    
+    while (p != NULL) {
+        bool hasDuplicate = false;
+        // Kiem tra xem ngay sinh cua p co trung voi bat ky ai khac trong danh sach hien tai hay khong
+        for (Node* q = l.first; q != NULL; q = q->link) {
+            if (p != q && compareDate(p->data.ngaySinh, q->data.ngaySinh)) {
+                hasDuplicate = true;
+                break;
             }
         }
-        if (isDuplicate) {
-            Node* toDelete = curr;
-            if (prev == NULL) { l.first = curr->link; curr = l.first; }
-            else { prev->link = curr->link; curr = prev->link; }
-            delete toDelete;
+
+        if (hasDuplicate) {
+            // Luu lai ngay sinh can xoa sach
+            Ngay targetDate = p->data.ngaySinh;
+            
+            // Tien hanh xoa TAT CA nhung node co ngay sinh nay
+            Node* tempCurr = l.first;
+            Node* tempPrev = NULL;
+            
+            while (tempCurr != NULL) {
+                if (compareDate(tempCurr->data.ngaySinh, targetDate)) {
+                    Node* toDelete = tempCurr;
+                    if (tempPrev == NULL) {
+                        l.first = tempCurr->link;
+                        tempCurr = l.first;
+                    } else {
+                        tempPrev->link = tempCurr->link;
+                        tempCurr = tempPrev->link;
+                    }
+                    delete toDelete;
+                } else {
+                    tempPrev = tempCurr;
+                    tempCurr = tempCurr->link;
+                }
+            }
+            // Sau khi xoa mot nhom trung, ta bat dau quet lai tu dau danh sach
+            p = l.first;
         } else {
-            prev = curr; curr = curr->link;
+            p = p->link;
         }
+    }
+    
+    // Cap nhat lai l.last sau khi xoa
+    if (l.first == NULL) {
+        l.last = NULL;
+    } else {
+        Node* t = l.first;
+        while (t->link != NULL) t = t->link;
+        l.last = t;
     }
 }
 
 int main() {
     List ds; Init(ds);
-    // Du lieu mau cho Test Cases
-    SinhVien sv1 = {"SV003", "Nguyen Van A", 1, {1, 1, 2004}, "HN", "IT01", "CNTT"};
+    
+    // Test Case
+    SinhVien sv1 = {"SV003", "Nguyen Van A", 1, {1, 1, 2003}, "HN", "IT01", "CNTT"};
     SinhVien sv2 = {"SV001", "Tran Thi B", 0, {5, 5, 2004}, "HCM", "IT02", "CNTT"};
-    SinhVien sv3 = {"SV002", "Le Van C", 1, {1, 1, 2004}, "DN", "IT01", "CNTT"};
+    SinhVien sv3 = {"SV002", "Le Van C", 1, {1, 1, 2003}, "DN", "IT01", "CNTT"};
     
     InsertSorted(ds, sv1);
     InsertSorted(ds, sv2);
